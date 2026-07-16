@@ -1,0 +1,221 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aromi AI — Full History</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{% static 'css/history.css' %}?v=5">
+</head>
+<body>
+
+  <div class="grid-bg"></div>
+
+  <!-- NAV -->
+  <nav class="topnav">
+    <a href="{% url 'progress' %}" class="nav-back">← Progress</a>
+    <div class="nav-logo">⚡ AroміAI</div>
+    <a href="{% url 'log_activity' %}" class="nav-cta">+ Log Today</a>
+  </nav>
+
+  <main class="history-main">
+
+    <!-- HERO -->
+    <div class="hist-hero">
+      <div class="hero-eyebrow">📅 Complete Records</div>
+      <h1 class="hero-title">Your Full <em>History</em></h1>
+      <p class="hero-sub">Every single day you showed up — recorded and stored forever.</p>
+    </div>
+
+    <!-- SUMMARY STRIP -->
+    <div class="summary-strip">
+      <div class="strip-item">
+        <span class="strip-num">{{ logs|length }}</span>
+        <span class="strip-lbl">Total Days Logged</span>
+      </div>
+      <div class="strip-div"></div>
+      <div class="strip-item">
+        <span class="strip-num">{{ logs|length }}</span>
+        <span class="strip-lbl">Workouts Completed</span>
+      </div>
+      <div class="strip-div"></div>
+      <div class="strip-item">
+        <span class="strip-num">{{ user.first_name|default:"You" }}</span>
+        <span class="strip-lbl">Athlete</span>
+      </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+      <span class="filter-label">Filter:</span>
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="running">🏃 Running</button>
+      <button class="filter-btn" data-filter="weights">🏋️ Weights</button>
+      <button class="filter-btn" data-filter="cycling">🚴 Cycling</button>
+      <button class="filter-btn" data-filter="yoga">🧘 Yoga</button>
+      <button class="filter-btn" data-filter="hiit">⚡ HIIT</button>
+      <button class="filter-btn" data-filter="rest">😴 Rest</button>
+      <input type="text" class="search-input" id="searchInput" placeholder="Search by date or workout…"/>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap">
+      <table class="hist-table" id="histTable">
+        <thead>
+          <tr>
+            <th class="sortable" data-col="0"># <span class="sort-arrow">↕</span></th>
+            <th class="sortable" data-col="1">Date <span class="sort-arrow">↕</span></th>
+            <th>Workout</th>
+            <th class="sortable" data-col="3">Duration <span class="sort-arrow">↕</span></th>
+            <th class="sortable" data-col="4">Calories <span class="sort-arrow">↕</span></th>
+            <th class="sortable" data-col="5">Weight <span class="sort-arrow">↕</span></th>
+            <th>Water</th>
+            <th>Steps</th>
+            <th>Mood</th>
+            <th>Intensity</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="histBody">
+          {% for log in logs %}
+          <tr class="hist-row" data-workout="{{ log.workout }}"
+              data-date="{{ log.date|date:'d M Y' }}">
+            <td class="td-num">{{ forloop.counter }}</td>
+            <td class="td-date">
+              <span class="date-day">{{ log.date|date:"d" }}</span>
+              <span class="date-mon">{{ log.date|date:"M Y" }}</span>
+            </td>
+            <td class="td-workout">
+              {% if log.workout == 'running' %}🏃 Running
+              {% elif log.workout == 'cycling' %}🚴 Cycling
+              {% elif log.workout == 'weights' %}🏋️ Weights
+              {% elif log.workout == 'swimming' %}🏊 Swimming
+              {% elif log.workout == 'yoga' %}🧘 Yoga
+              {% elif log.workout == 'hiit' %}⚡ HIIT
+              {% elif log.workout == 'walking' %}🚶 Walking
+              {% elif log.workout == 'rest' %}😴 Rest
+              {% else %}{{ log.workout|default:"—" }}{% endif %}
+            </td>
+            <td>{{ log.duration|default:"—" }}{% if log.duration %} min{% endif %}</td>
+            <td class="td-cal">{{ log.calories|default:"—" }}{% if log.calories %} kcal{% endif %}</td>
+            <td>{{ log.weight|default:"—" }}{% if log.weight %} kg{% endif %}</td>
+            <td class="td-water">{{ log.water|default:"—" }}{% if log.water %} L{% endif %}</td>
+            <td>{{ log.steps|default:"—" }}</td>
+            <td class="td-mood">
+              {% if log.mood == 1 %}😞
+              {% elif log.mood == 2 %}😕
+              {% elif log.mood == 3 %}😐
+              {% elif log.mood == 4 %}😊
+              {% elif log.mood == 5 %}🔥
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if log.intensity %}
+              <span class="badge {{ log.intensity }}">{{ log.intensity|title }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td class="td-notes">
+              {% if log.notes %}
+              <span class="note-text" title="{{ log.notes }}">
+                {{ log.notes|truncatechars:30 }}
+              </span>
+              {% else %}—{% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="11" class="empty-state">
+              <div class="empty-inner">
+                <span class="empty-icon">📭</span>
+                <p>No logs yet!</p>
+                <a href="{% url 'log_activity' %}">Log your first workout →</a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ROW COUNT -->
+    <div class="row-count" id="rowCount">
+      Showing <strong id="visibleCount">{{ logs|length }}</strong> of {{ logs|length }} records
+    </div>
+
+    <!-- BOTTOM ACTIONS -->
+    <div class="bottom-actions">
+      <a href="{% url 'log_activity' %}" class="btn-primary">+ Log Today</a>
+      <a href="{% url 'progress' %}" class="btn-ghost">← Back to Progress</a>
+    </div>
+
+  </main>
+
+  <script>
+    // ── Filter buttons ────────────────────────────────────
+    const rows = document.querySelectorAll('.hist-row');
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterRows();
+      });
+    });
+
+    document.getElementById('searchInput').addEventListener('input', filterRows);
+
+    function filterRows() {
+      const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      let visible = 0;
+
+      rows.forEach(row => {
+        const workout = row.dataset.workout;
+        const date    = row.dataset.date.toLowerCase();
+        const text    = row.textContent.toLowerCase();
+
+        const matchFilter = activeFilter === 'all' || workout === activeFilter;
+        const matchSearch = !search || text.includes(search) || date.includes(search);
+
+        if (matchFilter && matchSearch) {
+          row.style.display = '';
+          visible++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      document.getElementById('visibleCount').textContent = visible;
+    }
+
+    // ── Sortable columns ──────────────────────────────────
+    document.querySelectorAll('th.sortable').forEach(th => {
+      th.addEventListener('click', () => {
+        const col  = parseInt(th.dataset.col);
+        const tbody = document.getElementById('histBody');
+        const rowsArr = Array.from(tbody.querySelectorAll('.hist-row'));
+        const asc  = th.dataset.sort !== 'asc';
+        th.dataset.sort = asc ? 'asc' : 'desc';
+
+        document.querySelectorAll('th.sortable .sort-arrow').forEach(a => a.textContent = '↕');
+        th.querySelector('.sort-arrow').textContent = asc ? '↑' : '↓';
+
+        rowsArr.sort((a, b) => {
+          const aVal = a.cells[col]?.textContent.trim() || '';
+          const bVal = b.cells[col]?.textContent.trim() || '';
+          const aNum = parseFloat(aVal);
+          const bNum = parseFloat(bVal);
+          if (!isNaN(aNum) && !isNaN(bNum)) {
+            return asc ? aNum - bNum : bNum - aNum;
+          }
+          return asc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+        });
+
+        rowsArr.forEach(r => tbody.appendChild(r));
+      });
+    });
+  </script>
+</body>
+</html>

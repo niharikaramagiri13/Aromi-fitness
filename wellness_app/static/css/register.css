@@ -1,0 +1,186 @@
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    min-height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background-image:url("/static/images/health.png");
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,0.45);
+    backdrop-filter:blur(4px);
+}
+
+.register-container{
+    position:relative;
+    z-index:1;
+}
+
+.register-card{
+    width:420px;
+
+    padding:45px;
+
+    border-radius:30px;
+
+    background:rgba(255,255,255,0.08);
+
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+
+    border:1px solid rgba(255,255,255,0.15);
+
+    box-shadow:
+    0 8px 32px rgba(0,0,0,0.35),
+    0 0 40px rgba(79,172,254,.35);
+
+    text-align:center;
+
+    animation:float 5s ease-in-out infinite;
+}
+
+.register-card h1{
+    color:white;
+
+    margin-bottom:10px;
+
+    text-shadow:
+    0 0 10px #4facfe,
+    0 0 20px #4facfe,
+    0 0 40px #4facfe;
+}
+
+.register-card h2{
+    color:white;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    color:#ddd;
+    margin-bottom:30px;
+}
+
+.input-group{
+    margin-bottom:20px;
+}
+
+.input-group input{
+    width:100%;
+
+    padding:15px;
+
+    border:none;
+    outline:none;
+
+    border-radius:15px;
+
+    background:rgba(255,255,255,0.12);
+
+    color:white;
+
+    font-size:15px;
+
+    transition:.3s;
+}
+
+.input-group input::placeholder{
+    color:#ddd;
+}
+
+.input-group input:focus{
+    box-shadow:
+    0 0 15px #4facfe,
+    0 0 30px rgba(79,172,254,.6);
+}
+
+button{
+    width:100%;
+
+    padding:15px;
+
+    border:none;
+
+    border-radius:15px;
+
+    cursor:pointer;
+
+    font-size:16px;
+    font-weight:600;
+
+    color:white;
+
+    background:linear-gradient(
+        135deg,
+        #4facfe,
+        #00f2fe
+    );
+
+    box-shadow:
+    0 0 15px #4facfe,
+    0 0 35px rgba(79,172,254,.6);
+
+    transition:.3s;
+}
+
+button:hover{
+    transform:translateY(-3px);
+
+    box-shadow:
+    0 0 25px #4facfe,
+    0 0 50px rgba(79,172,254,.8);
+}
+
+.login-link{
+    margin-top:25px;
+    color:#ddd;
+}
+
+.login-link a{
+    color:#4facfe;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.login-link a:hover{
+    text-shadow:0 0 15px #4facfe;
+}
+
+@keyframes float{
+    0%{
+        transform:translateY(0px);
+    }
+    50%{
+        transform:translateY(-8px);
+    }
+    100%{
+        transform:translateY(0px);
+    }
+}
+
+@media(max-width:500px){
+
+    .register-card{
+        width:90%;
+        padding:30px;
+    }
+
+}
+

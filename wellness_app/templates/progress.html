@@ -1,0 +1,404 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Aromi AI — Your Progress</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="{% static 'css/progress.css' %}?v=8">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <div class="grid-bg"></div>
+
+  <!-- NAV -->
+  <nav class="topnav">
+    <a href="{% url 'plan' %}" class="nav-back">← Plan</a>
+    <div class="nav-logo">⚡ AroміAI</div>
+    <a href="{% url 'log_activity' %}" class="nav-cta">+ Log Today</a>
+  </nav>
+
+  <main class="progress-main">
+
+    <!-- HERO -->
+    <div class="prog-hero">
+      <div class="hero-eyebrow">📊 Your Progress Report</div>
+      <h1 class="hero-title">
+        Keep Going,<br/><em>{{ user.first_name|default:"Champion" }}</em>.
+      </h1>
+      <p class="hero-sub">Every entry you log builds the picture of your transformation.</p>
+    </div>
+
+    <!-- STAT CARDS -->
+    <section class="stats-grid">
+      <div class="stat-card s-lime">
+        <div class="stat-top">
+          <span class="stat-icon">🔥</span>
+          <span class="stat-tag">Streak</span>
+        </div>
+        <div class="stat-val">{{ streak }}<small>days</small></div>
+        <div class="stat-bar">
+          <div class="stat-fill" style="width: {{ streak|default:0 }}%;background:var(--lime)"></div>
+        </div>
+        <div class="stat-desc">Consecutive days logged</div>
+      </div>
+
+      <div class="stat-card s-cyan">
+        <div class="stat-top">
+          <span class="stat-icon">⚖️</span>
+          <span class="stat-tag">Weight</span>
+        </div>
+        <div class="stat-val">{{ current_weight|default:"—" }}<small>kg</small></div>
+        <div class="stat-delta {% if weight_change %}{% if '-' in weight_change|stringformat:'s' %}delta-down{% else %}delta-up{% endif %}{% endif %}">
+          {{ weight_change|default:"No change yet" }}
+        </div>
+        <div class="stat-desc">vs. your starting weight</div>
+      </div>
+
+      <div class="stat-card s-amber">
+        <div class="stat-top">
+          <span class="stat-icon">🔥</span>
+          <span class="stat-tag">Total Burned</span>
+        </div>
+        <div class="stat-val">{{ total_calories }}<small>kcal</small></div>
+        <div class="stat-desc">All time calories burned</div>
+      </div>
+
+      <div class="stat-card s-purple">
+        <div class="stat-top">
+          <span class="stat-icon">📋</span>
+          <span class="stat-tag">Logs</span>
+        </div>
+        <div class="stat-val">{{ total_logs }}<small>days</small></div>
+        <div class="stat-desc">Total days tracked</div>
+      </div>
+
+      <div class="stat-card s-cyan">
+        <div class="stat-top">
+          <span class="stat-icon">💧</span>
+          <span class="stat-tag">Avg Water</span>
+        </div>
+        <div class="stat-val">{{ avg_water }}<small>L/day</small></div>
+        <div class="stat-desc">Daily average hydration</div>
+    </div>
+
+    <div class="stat-card s-lime">
+        <div class="stat-top">
+        <span class="stat-icon">🚶</span>
+        <span class="stat-tag">Avg Steps</span>
+        </div>
+        <div class="stat-val">{{ avg_steps }}</div>
+        <div class="stat-desc">Steps per day average</div>
+    </div>
+    </section>
+
+    <!-- CHARTS GRID -->
+    <section class="charts-grid">
+
+    <!-- Weight Trend -->
+    <div class="chart-card chart-wide">
+        <div class="chart-header">
+        <div>
+            <span class="chart-title">Weight Trend</span>
+            <span class="chart-sub">Last 30 days · kg</span>
+        </div>
+        <span class="chart-badge lime">📉 Progress</span>
+        </div>
+        <div class="chart-wrap">
+        <canvas id="weightChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Calories Burned -->
+    <div class="chart-card">
+        <div class="chart-header">
+        <div>
+            <span class="chart-title">Calories Burned</span>
+            <span class="chart-sub">Daily · kcal</span>
+        </div>
+        <span class="chart-badge amber">🔥 Energy</span>
+        </div>
+        <div class="chart-wrap">
+        <canvas id="caloriesChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Steps -->
+    <div class="chart-card">
+        <div class="chart-header">
+        <div>
+            <span class="chart-title">Daily Steps</span>
+            <span class="chart-sub">Last 30 days</span>
+        </div>
+        <span class="chart-badge cyan">🚶 Activity</span>
+        </div>
+        <div class="chart-wrap">
+        <canvas id="stepsChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Water Intake -->
+    <div class="chart-card">
+        <div class="chart-header">
+        <div>
+            <span class="chart-title">Water Intake</span>
+            <span class="chart-sub">Daily · litres</span>
+        </div>
+        <span class="chart-badge cyan">💧 Hydration</span>
+        </div>
+        <div class="chart-wrap">
+        <canvas id="waterChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Mood Trend -->
+    <div class="chart-card">
+        <div class="chart-header">
+        <div>
+            <span class="chart-title">Mood Trend</span>
+            <span class="chart-sub">1 = Terrible · 5 = Amazing</span>
+        </div>
+        <span class="chart-badge purple">😊 Wellbeing</span>
+        </div>
+        <div class="chart-wrap">
+        <canvas id="moodChart"></canvas>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- RECENT LOGS TABLE -->
+    <section class="recent-section">
+      <div class="section-header">
+        <h2 class="section-title">Recent <em>Logs</em></h2>
+        <a href="{% url 'history' %}" class="see-all">See all records →</a>
+      </div>
+
+      <div class="logs-table-wrap">
+        <table class="logs-table">
+          <thead>
+            <tr>
+            <th>Date</th>
+            <th>Workout</th>
+            <th>Duration</th>
+            <th>Calories</th>
+            <th>Weight</th>
+            <th>Water</th>
+            <th>Steps</th>
+            <th>Mood</th>
+            <th>Intensity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in recent_logs %}
+            <tr>
+            <td class="td-date">{{ log.date|date:"d M Y" }}</td>
+            <td class="td-workout">
+                {% if log.workout == 'running' %}🏃 Running
+                {% elif log.workout == 'cycling' %}🚴 Cycling
+                {% elif log.workout == 'weights' %}🏋️ Weights
+                {% elif log.workout == 'swimming' %}🏊 Swimming
+                {% elif log.workout == 'yoga' %}🧘 Yoga
+                {% elif log.workout == 'hiit' %}⚡ HIIT
+                {% elif log.workout == 'walking' %}🚶 Walking
+                {% elif log.workout == 'rest' %}😴 Rest
+                {% else %}{{ log.workout|default:"—" }}{% endif %}
+            </td>
+            <td>{{ log.duration|default:"—" }} {% if log.duration %}min{% endif %}</td>
+            <td class="td-accent">{{ log.calories|default:"—" }} {% if log.calories %}kcal{% endif %}</td>
+            <td>{{ log.weight|default:"—" }} {% if log.weight %}kg{% endif %}</td>
+            <td>{{ log.water|default:"—" }} {% if log.water %}L{% endif %}</td>
+            <td>{{ log.steps|default:"—" }}</td>
+              <td class="td-mood">
+                {% if log.mood == 1 %}😞
+                {% elif log.mood == 2 %}😕
+                {% elif log.mood == 3 %}😐
+                {% elif log.mood == 4 %}😊
+                {% elif log.mood == 5 %}🔥
+                {% else %}—{% endif %}
+              </td>
+              <td>
+                {% if log.intensity %}
+                <span class="badge-intensity {{ log.intensity }}">{{ log.intensity|title }}</span>
+                {% else %}—{% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="9" class="empty-row">
+                No logs yet — <a href="{% url 'log_activity' %}">log your first day!</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <div class="bottom-cta">
+    <a href="{% url 'log_activity' %}" class="btn-log">+ Log Today's Activity</a>
+    <a href="{% url 'history' %}" class="btn-ghost">Full History →</a>
+    </div>
+
+  </main>
+
+  <!-- Chart Data from Django -->
+  <script>
+    const chartDates    = {{ chart_dates|safe }};
+    const chartWeights  = {{ chart_weights|safe }};
+    const chartCalories = {{ chart_calories|safe }};
+    const chartSteps    = {{ chart_steps|safe }};
+    const chartWater    = {{ chart_water|safe }};
+    const chartMoods    = {{ chart_moods|safe }};
+
+    // Chart defaults
+    Chart.defaults.color = 'rgba(236,236,244,0.4)';
+    Chart.defaults.font.family = 'Space Grotesk';
+    Chart.defaults.font.size = 11;
+
+    const gridColor = 'rgba(255,255,255,0.04)';
+
+    function makeGrad(ctx, color1, color2) {
+      const g = ctx.createLinearGradient(0, 0, 0, 220);
+      g.addColorStop(0, color1);
+      g.addColorStop(1, color2);
+      return g;
+    }
+
+    // ── Weight Line Chart ──────────────────────────────
+    const wCtx = document.getElementById('weightChart').getContext('2d');
+    new Chart(wCtx, {
+      type: 'line',
+      data: {
+        labels: chartDates,
+        datasets: [{
+          data: chartWeights,
+          borderColor: '#d4f53c',
+          borderWidth: 2.5,
+          backgroundColor: makeGrad(wCtx, 'rgba(212,245,60,0.2)', 'rgba(212,245,60,0)'),
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: '#d4f53c',
+          pointRadius: 4,
+          pointHoverRadius: 7,
+          spanGaps: true,
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: gridColor }, ticks: { maxTicksLimit: 8 } },
+          y: { grid: { color: gridColor }, beginAtZero: false }
+        },
+        responsive: true, maintainAspectRatio: false,
+    }
+    });
+
+    // ── Calories Bar Chart ─────────────────────────────
+    const cCtx = document.getElementById('caloriesChart').getContext('2d');
+    new Chart(cCtx, {
+      type: 'bar',
+      data: {
+        labels: chartDates,
+        datasets: [{
+        data: chartCalories,
+        backgroundColor: makeGrad(cCtx, 'rgba(245,184,60,0.85)', 'rgba(245,184,60,0.2)'),
+        borderRadius: 6,
+        borderSkipped: false,
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+        x: { grid: { color: gridColor }, ticks: { maxTicksLimit: 8 } },
+        y: { grid: { color: gridColor }, beginAtZero: true }
+        },
+        responsive: true, maintainAspectRatio: false,
+      }
+    });
+
+    // ── Steps Bar Chart ────────────────────────────────
+    const sCtx = document.getElementById('stepsChart').getContext('2d');
+    new Chart(sCtx, {
+      type: 'bar',
+      data: {
+        labels: chartDates,
+        datasets: [{
+        data: chartSteps,
+        backgroundColor: makeGrad(sCtx, 'rgba(60,245,212,0.85)', 'rgba(60,245,212,0.2)'),
+        borderRadius: 6,
+        borderSkipped: false,
+        }]
+    },
+    options: {
+        plugins: { legend: { display: false } },
+        scales: {
+        x: { grid: { color: gridColor }, ticks: { maxTicksLimit: 8 } },
+        y: { grid: { color: gridColor }, beginAtZero: true }
+        },
+        responsive: true, maintainAspectRatio: false,
+      }
+    });
+
+    // ── Water Line Chart ───────────────────────────────
+    const waCtx = document.getElementById('waterChart').getContext('2d');
+    new Chart(waCtx, {
+      type: 'line',
+      data: {
+        labels: chartDates,
+        datasets: [{
+        data: chartWater,
+        borderColor: '#3cf5d4',
+        borderWidth: 2.5,
+        backgroundColor: makeGrad(waCtx, 'rgba(60,245,212,0.2)', 'rgba(60,245,212,0)'),
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#3cf5d4',
+        pointRadius: 4,
+        pointHoverRadius: 7,
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: gridColor }, ticks: { maxTicksLimit: 8 } },
+          y: { grid: { color: gridColor }, beginAtZero: true, max: 5 }
+        },
+        responsive: true, maintainAspectRatio: false,
+      }
+    });
+
+    // ── Mood Line Chart ────────────────────────────────
+    const mCtx = document.getElementById('moodChart').getContext('2d');
+    new Chart(mCtx, {
+    type: 'line',
+    data: {
+        labels: chartDates,
+        datasets: [{
+        data: chartMoods,
+        borderColor: '#b83cf5',
+        borderWidth: 2.5,
+        backgroundColor: makeGrad(mCtx, 'rgba(184,60,245,0.2)', 'rgba(184,60,245,0)'),
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#b83cf5',
+        pointRadius: 4,
+        pointHoverRadius: 7,
+        }]
+    },
+    options: {
+        plugins: { legend: { display: false } },
+        scales: {
+        x: { grid: { color: gridColor }, ticks: { maxTicksLimit: 8 } },
+        y: { grid: { color: gridColor }, beginAtZero: true, min: 0, max: 5 }
+        },
+        responsive: true, maintainAspectRatio: false,
+    }
+    });
+  </script>
+</body>
+</html>

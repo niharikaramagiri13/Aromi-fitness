@@ -1,0 +1,231 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aromi AI — Log Today</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{% static 'css/log.css' %}?v=7">
+</head>
+<body>
+
+  <div class="grid-bg"></div>
+
+  <!-- TOP NAV -->
+  <nav class="topnav">
+    <a href="{% url 'plan' %}" class="nav-back">← Plan</a>
+    <div class="nav-logo">⚡ AroміAI</div>
+    <a href="{% url 'progress' %}" class="nav-link">Progress →</a>
+  </nav>
+
+  <main class="log-main">
+
+    <!-- HERO -->
+    <div class="log-hero">
+      <div class="hero-date" id="heroDate"></div>
+      <h1 class="hero-title">Log <em>Today's</em> Activity</h1>
+      <p class="hero-sub">Track every rep, every meal, every drop — your data tells your story.</p>
+      {% if existing %}
+      <div class="already-logged">
+        ✅ You already logged today — you can update it below.
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- FORM -->
+    <form method="POST" action="{% url 'log_activity' %}" class="log-form" id="logForm">
+      {% csrf_token %}
+
+      <!-- ── SECTION 1: BODY ── -->
+      <div class="form-section">
+        <div class="section-label">
+          <span class="section-num">01</span>
+          <span class="section-title">Body Metrics</span>
+        </div>
+        <div class="fields-row">
+          <div class="field-box">
+            <label>Weight <span class="unit">kg</span></label>
+            <input type="number" name="weight" step="0.1" placeholder="{{ existing.weight|default:'70.0' }}"
+                   value="{{ existing.weight|default:'' }}"/>
+            <span class="field-hint">Today's weight</span>
+          </div>
+          <div class="field-box">
+            <label>Water <span class="unit">litres</span></label>
+            <input type="number" name="water" step="0.1" min="0" max="10"
+                   placeholder="{{ existing.water|default:'2.5' }}"
+                   value="{{ existing.water|default:'' }}"/>
+            <span class="field-hint">Total water today</span>
+          </div>
+          <div class="field-box">
+            <label>Steps <span class="unit">count</span></label>
+            <input type="number" name="steps" min="0"
+                   placeholder="{{ existing.steps|default:'8000' }}"
+                   value="{{ existing.steps|default:'' }}"/>
+            <span class="field-hint">Total steps walked</span>
+          </div>
+          <div class="field-box">
+            <label>Calories <span class="unit">kcal burned</span></label>
+            <input type="number" name="calories" min="0"
+                   placeholder="{{ existing.calories|default:'300' }}"
+                   value="{{ existing.calories|default:'' }}"/>
+            <span class="field-hint">Estimated burned</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 2: WORKOUT ── -->
+      <div class="form-section">
+        <div class="section-label">
+          <span class="section-num">02</span>
+          <span class="section-title">Workout</span>
+        </div>
+
+        <div class="workout-grid">
+          {% for val, label in workout_choices %}
+          <label class="workout-card">
+            <input type="radio" name="workout" value="{{ val }}"
+              {% if existing.workout == val %}checked{% endif %}/>
+            <div class="wc-inner">
+              <span class="wc-icon">
+                {% if val == 'running' %}🏃
+                {% elif val == 'cycling' %}🚴
+                {% elif val == 'weights' %}🏋️
+                {% elif val == 'swimming' %}🏊
+                {% elif val == 'yoga' %}🧘
+                {% elif val == 'hiit' %}⚡
+                {% elif val == 'walking' %}🚶
+                {% elif val == 'rest' %}😴
+                {% else %}🎯{% endif %}
+              </span>
+              <span class="wc-label">{{ label }}</span>
+            </div>
+          </label>
+          
+          
+          {% endfor %}
+        </div>
+
+        <div class="fields-row mt-16">
+          <div class="field-box">
+            <label>Duration <span class="unit">minutes</span></label>
+            <input type="number" name="duration" min="0" max="360"
+                   placeholder="{{ existing.duration|default:'45' }}"
+                   value="{{ existing.duration|default:'' }}"/>
+          </div>
+          <div class="field-box">
+            <label>Intensity</label>
+            <div class="intensity-row">
+              <label class="int-btn">
+                <input type="radio" name="intensity" value="low"
+                  {% if existing.intensity == 'low' %}checked{% endif %}/>
+                <span>🟢 Low</span>
+              </label>
+              <label class="int-btn">
+                <input type="radio" name="intensity" value="medium"
+                  {% if existing.intensity == 'medium' %}checked{% endif %}/>
+                <span>🟡 Medium</span>
+              </label>
+              <label class="int-btn">
+                <input type="radio" name="intensity" value="high"
+                  {% if existing.intensity == 'high' %}checked{% endif %}/>
+                <span>🔴 High</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 3: MOOD ── -->
+      <div class="form-section">
+        <div class="section-label">
+          <span class="section-num">03</span>
+          <span class="section-title">How Do You Feel?</span>
+        </div>
+        <div class="mood-row">
+          <label class="mood-btn">
+            <input type="radio" name="mood" value="1" {% if existing.mood == 1 %}checked{% endif %}/>
+            <span class="mood-face">😞</span>
+            <span class="mood-lbl">Terrible</span>
+          </label>
+          <label class="mood-btn">
+            <input type="radio" name="mood" value="2" {% if existing.mood == 2 %}checked{% endif %}/>
+            <span class="mood-face">😕</span>
+            <span class="mood-lbl">Bad</span>
+          </label>
+          <label class="mood-btn">
+            <input type="radio" name="mood" value="3" {% if existing.mood == 3 %}checked{% endif %}/>
+            <span class="mood-face">😐</span>
+            <span class="mood-lbl">Okay</span>
+          </label>
+          <label class="mood-btn">
+            <input type="radio" name="mood" value="4" {% if existing.mood == 4 %}checked{% endif %}/>
+            <span class="mood-face">😊</span>
+            <span class="mood-lbl">Good</span>
+          </label>
+          <label class="mood-btn">
+            <input type="radio" name="mood" value="5" {% if existing.mood == 5 %}checked{% endif %}/>
+            <span class="mood-face">🔥</span>
+            <span class="mood-lbl">Amazing</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- ── SECTION 4: NOTES ── -->
+      <div class="form-section">
+        <div class="section-label">
+          <span class="section-num">04</span>
+          <span class="section-title">Notes</span>
+        </div>
+        <textarea name="notes" rows="3"
+          placeholder="How was today? Any pain, achievements, or things to remember…">{{ existing.notes|default:'' }}</textarea>
+      </div>
+
+      <!-- SUBMIT -->
+      <div class="submit-wrap">
+        <button type="submit" class="btn-submit">
+          <span>Save Today's Log</span>
+          <span class="submit-icon">💾</span>
+        </button>
+        <a href="{% url 'progress' %}" class="btn-ghost">View Progress →</a>
+      </div>
+
+    </form>
+  </main>
+
+  <script>
+    // Set today's date
+    const d = new Date();
+    document.getElementById('heroDate').textContent =
+      d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+    // Highlight selected workout card
+    document.querySelectorAll('.workout-card input').forEach(r => {
+      r.addEventListener('change', () => {
+        document.querySelectorAll('.workout-card').forEach(c => c.classList.remove('selected'));
+        r.closest('.workout-card').classList.add('selected');
+      });
+      if (r.checked) r.closest('.workout-card').classList.add('selected');
+    });
+
+    // Highlight intensity
+    document.querySelectorAll('.int-btn input').forEach(r => {
+      r.addEventListener('change', () => {
+        document.querySelectorAll('.int-btn').forEach(b => b.classList.remove('selected'));
+        r.closest('.int-btn').classList.add('selected');
+      });
+      if (r.checked) r.closest('.int-btn').classList.add('selected');
+    });
+
+    // Highlight mood
+    document.querySelectorAll('.mood-btn input').forEach(r => {
+      r.addEventListener('change', () => {
+        document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+        r.closest('.mood-btn').classList.add('selected');
+      });
+      if (r.checked) r.closest('.mood-btn').classList.add('selected');
+    });
+  </script>
+</body>
+</html>

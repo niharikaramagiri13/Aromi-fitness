@@ -1,0 +1,564 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aromi AI — Your Personal Plan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{% static 'css/plancs.css' %}?v=5">
+</head>
+<body>
+
+  <!-- Noise overlay -->
+  <div class="noise"></div>
+
+  <!-- Decorative background circles -->
+  <div class="bg-deco">
+    <div class="deco-ring r1"></div>
+    <div class="deco-ring r2"></div>
+    <div class="deco-blob b1"></div>
+    <div class="deco-blob b2"></div>
+  </div>
+
+  <!-- ══ NAVBAR ══ -->
+  <nav class="topnav reveal-0">
+    <div class="nav-logo">
+      <span class="nav-bolt">⚡</span>
+      <span>Aromi<b>AI</b></span>
+    </div>
+    <div class="nav-right-group">
+      <span class="nav-user">👤 {{ user.first_name|default:user.username }}</span>
+      <a href="{% url 'logout' %}" class="nav-logout">Logout</a>
+    </div>
+</nav>
+  <!-- ══ HERO ══ -->
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="hero-tag reveal-1">✦ Your personalised plan is ready</div>
+
+      <h1 class="hero-title reveal-2">
+        Hello, <em>{{ user.first_name|default:"Champion" }}</em>.<br/>
+        <span class="hero-sub-title">Here's everything<br/>built just for you.</span>
+      </h1>
+
+      <p class="hero-desc reveal-3">
+        Based on your profile — <strong>{{ goal|default:"general health" }}</strong> goal,
+        <strong>{{ diet|default:"balanced" }}</strong> diet,
+        {{ age|default:"—" }} yrs · {{ weight|default:"—" }}kg · {{ height|default:"—" }}cm —
+        Aromi has crafted your complete roadmap below.
+      </p>
+
+      <!-- Quick stats ribbon -->
+      <div class="ribbon reveal-4">
+        <div class="ribbon-item">
+          <span class="ri-val">{{ calorie_target|default:"1,850" }}</span>
+          <span class="ri-lbl">kcal / day</span>
+        </div>
+        <div class="ribbon-sep"></div>
+        <div class="ribbon-item">
+          <span class="ri-val">{{ water_target|default:"2.5" }}L</span>
+          <span class="ri-lbl">water / day</span>
+        </div>
+        <div class="ribbon-sep"></div>
+        <div class="ribbon-item">
+          <span class="ri-val">{{ workout_days|default:"4" }}×</span>
+          <span class="ri-lbl">workouts / week</span>
+        </div>
+        <div class="ribbon-sep"></div>
+        <div class="ribbon-item">
+          <span class="ri-val">{{ protein_target|default:"120" }}g</span>
+          <span class="ri-lbl">protein / day</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decorative arch -->
+    <div class="hero-arch"></div>
+  </header>
+
+  <!-- ══ MAIN CONTENT ══ -->
+  <main class="plan-body">
+
+    <!-- ── SECTION: DIET PLAN ── -->
+    <section class="plan-section reveal-5" id="diet">
+      <div class="section-eyebrow">
+        <span class="eyebrow-icon">🥗</span>
+        <span>Diet Plan</span>
+      </div>
+      <h2 class="section-title">Your Daily <em>Nutrition</em> Blueprint</h2>
+      <p class="section-desc">Every meal is designed to fuel your <strong>{{ goal|default:"health" }}</strong> goal while matching your <strong>{{ diet|default:"balanced" }}</strong> preference.</p>
+
+      <div class="meal-grid">
+
+        <!-- Breakfast -->
+        <div class="meal-card mc-breakfast">
+          <div class="meal-time">
+            <span class="meal-clock">07:00 AM</span>
+            <span class="meal-badge">Breakfast</span>
+          </div>
+          <div class="meal-icon-wrap"><span class="meal-icon">🌅</span></div>
+          <h3 class="meal-name">Power Morning Bowl</h3>
+          <ul class="meal-items">
+            <li>Oats with chia seeds & banana</li>
+            <li>2 boiled eggs / paneer cubes</li>
+            <li>1 glass warm lemon water</li>
+            <li>Mixed nuts (almonds, walnuts)</li>
+          </ul>
+          <div class="meal-macros">
+            <span>🔥 480 kcal</span>
+            <span>💪 28g protein</span>
+            <span>🌾 52g carbs</span>
+          </div>
+        </div>
+
+        <!-- Mid-morning -->
+        <div class="meal-card mc-snack">
+          <div class="meal-time">
+            <span class="meal-clock">10:30 AM</span>
+            <span class="meal-badge">Snack</span>
+          </div>
+          <div class="meal-icon-wrap"><span class="meal-icon">🍎</span></div>
+          <h3 class="meal-name">Energy Refuel</h3>
+          <ul class="meal-items">
+            <li>1 seasonal fruit (apple/guava)</li>
+            <li>Greek yoghurt or buttermilk</li>
+            <li>Green tea (no sugar)</li>
+          </ul>
+          <div class="meal-macros">
+            <span>🔥 180 kcal</span>
+            <span>💪 10g protein</span>
+            <span>🌾 22g carbs</span>
+          </div>
+        </div>
+
+        <!-- Lunch -->
+        <div class="meal-card mc-lunch">
+          <div class="meal-time">
+            <span class="meal-clock">01:00 PM</span>
+            <span class="meal-badge">Lunch</span>
+          </div>
+          <div class="meal-icon-wrap"><span class="meal-icon">☀️</span></div>
+          <h3 class="meal-name">Balanced Power Plate</h3>
+          <ul class="meal-items">
+            <li>2 rotis / 1 cup brown rice</li>
+            <li>Dal / rajma / grilled chicken</li>
+            <li>Seasonal sabzi (cooked lightly)</li>
+            <li>Salad + 1 cup curd</li>
+          </ul>
+          <div class="meal-macros">
+            <span>🔥 620 kcal</span>
+            <span>💪 35g protein</span>
+            <span>🌾 70g carbs</span>
+          </div>
+        </div>
+
+        <!-- Evening snack -->
+        <div class="meal-card mc-snack">
+          <div class="meal-time">
+            <span class="meal-clock">04:30 PM</span>
+            <span class="meal-badge">Pre-Workout</span>
+          </div>
+          <div class="meal-icon-wrap"><span class="meal-icon">⚡</span></div>
+          <h3 class="meal-name">Pre-Workout Boost</h3>
+          <ul class="meal-items">
+            <li>Banana + peanut butter</li>
+            <li>Black coffee / coconut water</li>
+            <li>Handful of roasted chana</li>
+          </ul>
+          <div class="meal-macros">
+            <span>🔥 240 kcal</span>
+            <span>💪 12g protein</span>
+            <span>🌾 30g carbs</span>
+          </div>
+        </div>
+
+        <!-- Dinner -->
+        <div class="meal-card mc-dinner">
+          <div class="meal-time">
+            <span class="meal-clock">08:00 PM</span>
+            <span class="meal-badge">Dinner</span>
+          </div>
+          <div class="meal-icon-wrap"><span class="meal-icon">🌙</span></div>
+          <h3 class="meal-name">Light Recovery Meal</h3>
+          <ul class="meal-items">
+            <li>Vegetable soup / dal khichdi</li>
+            <li>Grilled fish / tofu / eggs</li>
+            <li>Stir-fried veggies</li>
+            <li>1 small roti (optional)</li>
+          </ul>
+          <div class="meal-macros">
+            <span>🔥 430 kcal</span>
+            <span>💪 30g protein</span>
+            <span>🌾 35g carbs</span>
+          </div>
+        </div>
+
+        <!-- Hydration tip card -->
+        <div class="meal-card mc-water">
+          <div class="meal-icon-wrap big"><span class="meal-icon">💧</span></div>
+          <h3 class="meal-name">Hydration Rule</h3>
+          <p class="water-rule">Drink <strong>{{ water_target|default:"2.5" }}L</strong> of water daily. Start each morning with warm lemon water. Avoid cold drinks post-workout.</p>
+          <div class="water-bar-wrap">
+            <div class="water-bar"><div class="water-fill"></div></div>
+            <span class="water-lbl">Daily water goal</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── SECTION: WORKOUT PLAN ── -->
+    <section class="plan-section reveal-6" id="workout">
+      <div class="section-eyebrow">
+        <span class="eyebrow-icon">🏋️</span>
+        <span>Workout Plan</span>
+      </div>
+      <h2 class="section-title">Your Weekly <em>Training</em> Schedule</h2>
+      <p class="section-desc">A structured 4-day program built for your activity level and goal.</p>
+
+      <div class="week-grid">
+
+        <div class="day-card active-day">
+          <div class="day-label">Monday</div>
+          <div class="day-focus">💪 Chest & Triceps</div>
+          <ul class="exercise-list">
+            <li><span class="ex-name">Push-ups</span><span class="ex-sets">4 × 15</span></li>
+            <li><span class="ex-name">Dumbbell Press</span><span class="ex-sets">3 × 12</span></li>
+            <li><span class="ex-name">Incline Flyes</span><span class="ex-sets">3 × 10</span></li>
+            <li><span class="ex-name">Tricep Dips</span><span class="ex-sets">3 × 12</span></li>
+            <li><span class="ex-name">Skull Crushers</span><span class="ex-sets">3 × 10</span></li>
+          </ul>
+          <div class="day-footer"><span>⏱ 45 min</span><span>🔥 ~280 kcal</span></div>
+        </div>
+
+        <div class="day-card active-day">
+          <div class="day-label">Tuesday</div>
+          <div class="day-focus">🦵 Legs & Glutes</div>
+          <ul class="exercise-list">
+            <li><span class="ex-name">Squats</span><span class="ex-sets">4 × 15</span></li>
+            <li><span class="ex-name">Lunges</span><span class="ex-sets">3 × 12</span></li>
+            <li><span class="ex-name">Leg Press</span><span class="ex-sets">3 × 10</span></li>
+            <li><span class="ex-name">Glute Bridges</span><span class="ex-sets">4 × 15</span></li>
+            <li><span class="ex-name">Calf Raises</span><span class="ex-sets">3 × 20</span></li>
+          </ul>
+          <div class="day-footer"><span>⏱ 50 min</span><span>🔥 ~320 kcal</span></div>
+        </div>
+
+        <div class="day-card rest-day">
+          <div class="day-label">Wednesday</div>
+          <div class="day-focus">🧘 Active Rest</div>
+          <ul class="exercise-list">
+            <li><span class="ex-name">Morning Yoga</span><span class="ex-sets">20 min</span></li>
+            <li><span class="ex-name">Light Walk</span><span class="ex-sets">30 min</span></li>
+            <li><span class="ex-name">Stretching</span><span class="ex-sets">15 min</span></li>
+          </ul>
+          <div class="day-footer rest-tag">Recovery Day</div>
+        </div>
+
+        <div class="day-card active-day">
+          <div class="day-label">Thursday</div>
+          <div class="day-focus">🏋️ Back & Biceps</div>
+          <ul class="exercise-list">
+            <li><span class="ex-name">Pull-ups / Lat Pull</span><span class="ex-sets">4 × 10</span></li>
+            <li><span class="ex-name">Bent-over Rows</span><span class="ex-sets">3 × 12</span></li>
+            <li><span class="ex-name">Seated Cable Row</span><span class="ex-sets">3 × 12</span></li>
+            <li><span class="ex-name">Dumbbell Curls</span><span class="ex-sets">3 × 12</span></li>
+            <li><span class="ex-name">Hammer Curls</span><span class="ex-sets">3 × 10</span></li>
+          </ul>
+          <div class="day-footer"><span>⏱ 45 min</span><span>🔥 ~260 kcal</span></div>
+        </div>
+
+        <div class="day-card active-day">
+          <div class="day-label">Friday</div>
+          <div class="day-focus">🫀 Cardio & Core</div>
+          <ul class="exercise-list">
+            <li><span class="ex-name">Running / Cycling</span><span class="ex-sets">20 min</span></li>
+            <li><span class="ex-name">Plank</span><span class="ex-sets">3 × 60s</span></li>
+            <li><span class="ex-name">Crunches</span><span class="ex-sets">3 × 20</span></li>
+            <li><span class="ex-name">Mountain Climbers</span><span class="ex-sets">3 × 30</span></li>
+            <li><span class="ex-name">Burpees</span><span class="ex-sets">3 × 10</span></li>
+          </ul>
+          <div class="day-footer"><span>⏱ 40 min</span><span>🔥 ~350 kcal</span></div>
+        </div>
+
+        <div class="day-card rest-day">
+          <div class="day-label">Sat & Sun</div>
+          <div class="day-focus">😴 Full Rest</div>
+          <ul class="exercise-list">
+            <li><span class="ex-name">Sleep 8 hours</span><span class="ex-sets">✓</span></li>
+            <li><span class="ex-name">Light stretching</span><span class="ex-sets">✓</span></li>
+            <li><span class="ex-name">Meal prep</span><span class="ex-sets">✓</span></li>
+          </ul>
+          <div class="day-footer rest-tag">Recharge & Reset</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── SECTION: WELLNESS TIPS ── -->
+    <section class="plan-section reveal-7" id="wellness">
+      <div class="section-eyebrow">
+        <span class="eyebrow-icon">✨</span>
+        <span>Wellness Tips</span>
+      </div>
+      <h2 class="section-title">Daily <em>Habits</em> That Compound</h2>
+
+      <div class="tips-grid">
+        <div class="tip-card">
+          <span class="tip-icon">🌅</span>
+          <h4>Morning Ritual</h4>
+          <p>Wake up at the same time daily. 10 minutes of sunlight exposure within 30 mins of waking regulates your circadian rhythm and boosts energy all day.</p>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">😴</span>
+          <h4>Sleep is Training</h4>
+          <p>80% of muscle recovery happens during sleep. Aim for 7–9 hours. Avoid screens 1 hour before bed and keep your room cool and dark.</p>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">🧠</span>
+          <h4>Mindset Matters</h4>
+          <p>Track your progress weekly, not daily. Motivation fluctuates — discipline doesn't. Celebrate small wins every single week.</p>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">📵</span>
+          <h4>Stress Management</h4>
+          <p>High cortisol (stress hormone) directly blocks fat loss and muscle gain. 10 minutes of daily meditation or deep breathing makes a measurable difference.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA ── -->
+    <!-- Tracking Journey Section -->
+<section class="tracking-section reveal-8">
+  <div class="track-eyebrow">✦ Your Plan is Ready — Now Track It</div>
+  <h2 class="track-title">Turn Your Plan Into <em>Results</em></h2>
+  <p class="track-desc">
+    Your roadmap is set. Now log every day, watch your charts grow,
+    and see your transformation happen in real time.
+  </p>
+
+  <!-- 3 Step Cards -->
+  <div class="track-cards">
+
+    <div class="track-card">
+      <div class="track-step">Step 1</div>
+      <div class="track-icon">📝</div>
+      <h3>Log Daily</h3>
+      <p>Record your workout, weight, water, steps and mood every single day.</p>
+      <a href="{% url 'log_activity' %}" class="track-btn">Start Logging →</a>
+    </div>
+
+    <div class="track-card tc-mid">
+      <div class="track-step">Step 2</div>
+      <div class="track-icon">📊</div>
+      <h3>Track Progress</h3>
+      <p>See your weight trend, calories burned and streak on beautiful charts.</p>
+      <a href="{% url 'progress' %}" class="track-btn">View Progress →</a>
+    </div>
+
+    <div class="track-card">
+      <div class="track-step">Step 3</div>
+      <div class="track-icon">📅</div>
+      <h3>Review History</h3>
+      <p>Browse your complete records, filter by workout and spot your patterns.</p>
+      <a href="{% url 'history' %}" class="track-btn">See History →</a>
+    </div>
+
+  </div>
+
+  <!-- Big CTA -->
+  <div class="track-cta">
+    <a href="{% url 'log_activity' %}" class="btn-start">
+      ⚡ Log Today's Activity
+    </a>
+    <p class="track-note">Takes less than 2 minutes · Do it every day</p>
+  </div>
+
+</section>
+
+  </main>
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="plan-footer">
+  <span>© 2026 Aromi AI · Built for <strong>{{ user.first_name|default:"You" }}</strong></span>
+  </footer>
+
+  <script>
+    // Staggered scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('[class*="reveal-"]').forEach(el => observer.observe(el));
+
+    // Water bar animation on scroll
+    const waterFill = document.querySelector('.water-fill');
+    const waterObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          waterFill.style.width = '72%';
+          waterObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    if (waterFill) waterObs.observe(waterFill);
+  </script>
+  <!-- ══ FLOATING CHATBOT WIDGET ══ -->
+
+  <!-- Bubble Button -->
+  <button class="chat-bubble" id="chatBubble" onclick="toggleChat()">
+    <span class="bubble-icon" id="bubbleIcon">🤖</span>
+    
+  </button>
+
+  <!-- Chat Window -->
+  <div class="chat-window" id="chatWindow">
+
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <div class="chat-avatar">⚡</div>
+        <div>
+          <span class="chat-name">Aromi AI</span>
+          <span class="chat-status">● Online</span>
+        </div>
+      </div>
+      <button class="chat-close" onclick="toggleChat()">✕</button>
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg bot-msg">
+        <div class="msg-bubble">
+          👋 Hey {{ user.first_name|default:"there" }}! I'm Aromi AI — your personal fitness coach. Ask me anything about your plan, diet or workouts!
+        </div>
+        <span class="msg-time">Just now</span>
+      </div>
+    </div>
+
+    <!-- Quick Suggestions -->
+    <div class="quick-suggestions" id="quickSuggestions">
+      <button onclick="sendQuick('How do I lose weight?')">🔥 Lose weight</button>
+      <button onclick="sendQuick('Give me a workout plan')">🏋️ Workout</button>
+      <button onclick="sendQuick('What should I eat?')">🥗 Diet tips</button>
+      <button onclick="sendQuick('I have back pain')">💊 Pain relief</button>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input-wrap">
+      <input
+        type="text"
+        id="chatInput"
+        placeholder="Ask me anything…"
+        onkeypress="if(event.key==='Enter') sendMessage()"
+        autocomplete="off"
+      />
+      <button class="send-btn" onclick="sendMessage()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Chat Script -->
+  <script>
+    let isOpen = false;
+
+    function toggleChat() {
+      isOpen = !isOpen;
+      const win   = document.getElementById('chatWindow');
+      const icon  = document.getElementById('bubbleIcon');
+      const badge = document.getElementById('bubbleBadge');
+
+      win.classList.toggle('open', isOpen);
+      icon.textContent  = isOpen ? '✕' : '🤖';
+      badge.style.display = isOpen ? 'none' : 'flex';
+
+      if (isOpen) {
+        document.getElementById('chatInput').focus();
+      }
+    }
+
+    function sendQuick(text) {
+      document.getElementById('chatInput').value = text;
+      document.getElementById('quickSuggestions').style.display = 'none';
+      sendMessage();
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const msg   = input.value.trim();
+      if (!msg) return;
+
+      appendMessage(msg, 'user');
+      input.value = '';
+
+      const typingId = showTyping();
+
+      fetch('/chatbot-response/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: JSON.stringify({ message: msg }),
+      })
+      .then(res => res.json())
+      .then(data => {
+        removeTyping(typingId);
+        appendMessage(data.response, 'bot');
+      })
+      .catch(() => {
+        removeTyping(typingId);
+        appendMessage('Sorry, something went wrong. Please try again!', 'bot');
+      });
+    }
+
+    function appendMessage(text, sender) {
+      const box = document.getElementById('chatMessages');
+      const div = document.createElement('div');
+      div.className = `msg ${sender}-msg`;
+
+      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      div.innerHTML = `
+        <div class="msg-bubble">${text.replace(/\n/g, '<br/>')}</div>
+        <span class="msg-time">${now}</span>
+      `;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function showTyping() {
+      const box = document.getElementById('chatMessages');
+      const div = document.createElement('div');
+      const id  = 'typing-' + Date.now();
+      div.id    = id;
+      div.className = 'msg bot-msg';
+      div.innerHTML = `
+        <div class="msg-bubble typing-bubble">
+          <span></span><span></span><span></span>
+        </div>`;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+      return id;
+    }
+
+    function removeTyping(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
+  </script>
+</body>
+</html>
