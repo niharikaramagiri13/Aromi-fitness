@@ -49,11 +49,10 @@ aromi/
 │   ├── urls.py
 │   ├── views.py
 │   ├── migrations/
+|   |___ Templates/
 │   └── static/
 │       └── css/
 │           └── ...
-└── templates/
-    └── ...
 ```
 
 ### 🧩 Main Application Modules
